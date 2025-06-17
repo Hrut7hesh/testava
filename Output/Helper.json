@@ -1,0 +1,34 @@
+{
+  "helpers_present": true,
+  "helpers": [
+    {
+      "file_name": "application_helper.rb",
+      "module_name": "ApplicationHelper",
+      "methods": ["page_title", "format_date", "active_class"]
+    },
+    {
+      "file_name": "users_helper.rb",
+      "module_name": "UsersHelper",
+      "methods": ["user_avatar", "user_full_name", "user_role_badge"]
+    },
+    {
+      "file_name": "posts_helper.rb",
+      "module_name": "PostsHelper",
+      "methods": ["post_summary", "format_post_date", "post_author_link"]
+    }
+  ],
+  "inline_view_logic": [
+    "<%= user.first_name.capitalize + ' ' + user.last_name.capitalize %>",
+    "<%= post.created_at.strftime('%B %d, %Y at %H:%M') %>",
+    "<%= comment.body.length > 100 ? comment.body[0..100] + '...' : comment.body %>",
+    "<%= product.price > 0 ? number_to_currency(product.price) : 'Free' %>"
+  ],
+  "decorators_present": true,
+  "decorators": ["UserDecorator", "PostDecorator", "CommentDecorator", "ProductDecorator"],
+  "suggested_extractions": [
+    "def user_full_name(user)\n  user.first_name.capitalize + ' ' + user.last_name.capitalize\nend",
+    "def formatted_post_datetime(post)\n  post.created_at.strftime('%B %d, %Y at %H:%M')\nend",
+    "def truncated_comment(comment, length = 100)\n  comment.body.length > length ? comment.body[0..length] + '...' : comment.body\nend",
+    "def product_price_display(product)\n  product.price > 0 ? number_to_currency(product.price) : 'Free'\nend"
+  ]
+}
