@@ -1,0 +1,91 @@
+
+
+
+
+
+
+
+
+
+
+DEVELOP THE FOLLOWING SMALL PROJECT  
+
+   (a) Address  class (this class contains the address details)
+           private String city;
+           private int zipcode;
+              constructors/getters/setters
+
+   (b) Customer  class (this class contains customer details and also address)
+
+         private String customerName;
+         private int customerNumber;
+         private Address customerAddress;
+        constructors/getters/setters
+
+
+  (c) BankAccount  (this is the abstract super class of other bank account types)
+       private int actNumber;  
+       private double actBalance;
+       private Customer customer;
+
+  (d) SavingsAccount  (this is the direct sub class of the BankAccount class and contains the                      following)
+       private int interestRate;
+           constructors/getters/setters
+     
+  (e)  LoanAccount (this is the direct subclass of the BankAccount class and contains the                      following)
+          private int actualLoanAmount;
+          private int paidLoanAmount;
+          
+            constructors/getters/setters
+  (f) AccountNotFoundException (define this class as checked exception)
+         override the toString() method to display the message "account not valid" (suffixed with                                                                            accountNumber)
+  (g)InSufficientFundsException  (define this class as un-checked exception)
+          override the toString() method to display the message "funds not available" (suffixed with the funds to be transferred or withdrawn);
+  
+  (h) IBankingOperations  (Declare this as interface with the following methods)
+
+         public void withDraw(BankAccount bankAccount, int withDrawAmount)
+         public void deposit(BankAccount bankAccount,int depositAmount)
+         public void showBalance(BankAccount bankAccount)
+         public void transferFunds(BankAccount accountSource, BankAccount accountTarget,int transferAmount)
+
+  (I) now define the implementation classes (one or more)
+      BankingOperationsImpl  (override all methods with correct/suitable functionality) 
+
+       the BankingOperationsImpl class   should implement the IBankingOperations interface and override           all the methods.  the methods should function as follows.
+
+        (i) withDraw(): this method should throw 
+                   -->AccountNotFoundException : if the given BankAccount is not found the withDraw()                                                  method should throw the AccountNotFoundException. 
+                      
+               code hint:   if( bankAccount.getAccountNumber() != 123456)
+                            {
+                            throw new AccountNotFoundException(123456)
+                            }
+
+                  ---->InSufficientFundsException : if the account does not contain enough funds the                                       withDraw() method should throws  InSufficientFundsException
+              code hint:  if( bankAccount.getAccountBalance() < withDrawAmount)
+                        {
+                          throw new InSufficientFundsException(withDrawAmount)
+                          }
+
+           if there is no exception situation then actBalance should be deducted with withDrawAmount                     and message should be printed "with draw successful"
+     (ii) deposit(): this method should throw
+
+                 -->AccountNotFoundException : if the given BankAccount is not found the withDraw()                                                  method should throw the AccountNotFoundException. 
+                      
+               code hint:   if( bankAccount.getAccountNumber() != 123456)
+                            {
+                            throw new AccountNotFoundException(123456)
+                            }
+           if there is no exception situation then actBalance should be added with depositAmount and a              message should be printed as "deposit successful"
+
+   (iii) showBalance(): this method should print the balance of the given account number if found. if             the account not found it should throw the AccountNotFoundException similar to the above two              methods
+
+   (iv) transferFunds(). this method is self explainatory and should throw the relevant exceptions such as AccountNotFoundException if the either the sourceAccountNumber or targeAccountNumber not found,  
+    InSufficientFundsException  if the balance in the sourceAccountNumber is less than the transferAmount
+
+     if all is well,  actBalance of the sourceAccountNumber should be deducted with transferAmount and the actBalance of the targetAccountNumber should be added with the transferAmount
+
+
+
+ (J) BankingClient : this is the main class (public static void main()) which creates the objects of the SavingsAccount and/or CheckingAccount  and perform the relevant operations  such as withDraw() deposit() etc
