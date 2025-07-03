@@ -1,0 +1,297 @@
+// File: src/test/java/com/example/project/repository/MilestoneRepositoryTest.java
+
+package com.example.project.repository;
+
+import com.example.project.entity.MilestoneEntity;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.test.context.ActiveProfiles;
+
+import jakarta.validation.ConstraintViolationException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Integration tests for MilestoneRepository.
+ * Uses @DataMongoTest to test MongoDB repository behavior.
+ */
+@DataMongoTest
+@ActiveProfiles("test")
+class MilestoneRepositoryTest {
+
+    @Autowired
+    private MilestoneRepository milestoneRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    private MilestoneEntity milestone1;
+    private MilestoneEntity milestone2;
+
+    @BeforeEach
+    void setUp() {
+        milestoneRepository.deleteAll();
+
+        milestone1 = new MilestoneEntity(
+                null,
+                "Milestone Alpha",
+                "First milestone",
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2023, 2, 1),
+                "active",
+                "project123",
+                "groupA"
+        );
+
+        milestone2 = new MilestoneEntity(
+                null,
+                "Milestone Beta",
+                "Second milestone",
+                LocalDate.of(2023, 3, 1),
+                LocalDate.of(2023, 4, 1),
+                "closed",
+                "project456",
+                "groupB"
+        );
+    }
+
+    @AfterEach
+    void tearDown() {
+        milestoneRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("Should save and retrieve MilestoneEntity by ID")
+    void testSaveAndFindById() {
+        MilestoneEntity saved = milestoneRepository.save(milestone1);
+        Optional<MilestoneEntity> found = milestoneRepository.findById(saved.getId());
+        assertTrue(found.isPresent());
+        assertEquals("Milestone Alpha", found.get().getTitle());
+    }
+
+    @Test
+    @DisplayName("Should find milestones by projectId")
+    void testFindByProjectId() {
+        milestoneRepository.save(milestone1);
+        milestoneRepository.save(milestone2);
+
+        List<MilestoneEntity> result = milestoneRepository.findByProjectId("project123");
+        assertEquals(1, result.size());
+        assertEquals("Milestone Alpha", result.get(0).getTitle());
+    }
+
+    @Test
+    @DisplayName("Should find milestones by groupId")
+    void testFindByGroupId() {
+        milestoneRepository.save(milestone1);
+        milestoneRepository.save(milestone2);
+
+        List<MilestoneEntity> result = milestoneRepository.findByGroupId("groupB");
+        assertEquals(1, result.size());
+        assertEquals("Milestone Beta", result.get(0).getTitle());
+    }
+
+    @Test
+    @DisplayName("Should find milestone by title")
+    void testFindByTitle() {
+        milestoneRepository.save(milestone1);
+        Optional<MilestoneEntity> found = milestoneRepository.findByTitle("Milestone Alpha");
+        assertTrue(found.isPresent());
+        assertEquals("Milestone Alpha", found.get().getTitle());
+    }
+
+    @Test
+    @DisplayName("Should return empty when milestone title does not exist")
+    void testFindByTitleNotFound() {
+        Optional<MilestoneEntity> found = milestoneRepository.findByTitle("Nonexistent");
+        assertFalse(found.isPresent());
+    }
+
+    @Test
+    @DisplayName("Should enforce unique constraint on title")
+    void testUniqueTitleConstraint() {
+        milestoneRepository.save(milestone1);
+        MilestoneEntity duplicate = new MilestoneEntity(
+                null,
+                "Milestone Alpha", // duplicate title
+                "Duplicate milestone",
+                LocalDate.of(2023, 5, 1),
+                LocalDate.of(2023, 6, 1),
+                "active",
+                "project789",
+                "groupC"
+        );
+        // Expect DuplicateKeyException due to unique index on title
+        assertThrows(DuplicateKeyException.class, () -> {
+            milestoneRepository.save(duplicate);
+            milestoneRepository.flush();
+        });
+    }
+
+    @Test
+    @DisplayName("Should delete milestone by ID")
+    void testDeleteById() {
+        MilestoneEntity saved = milestoneRepository.save(milestone1);
+        milestoneRepository.deleteById(saved.getId());
+        assertFalse(milestoneRepository.findById(saved.getId()).isPresent());
+    }
+
+    @Test
+    @DisplayName("Should update milestone fields")
+    void testUpdateMilestone() {
+        MilestoneEntity saved = milestoneRepository.save(milestone1);
+        saved.setDescription("Updated description");
+        saved.setState("closed");
+        milestoneRepository.save(saved);
+
+        Optional<MilestoneEntity> updated = milestoneRepository.findById(saved.getId());
+        assertTrue(updated.isPresent());
+        assertEquals("Updated description", updated.get().getDescription());
+        assertEquals("closed", updated.get().getState());
+    }
+
+    @Test
+    @DisplayName("Should return empty list for non-existent projectId")
+    void testFindByProjectIdEmpty() {
+        List<MilestoneEntity> result = milestoneRepository.findByProjectId("unknown");
+        assertTrue(result.isEmpty());
+    }
+}
+
+// File: src/test/java/com/example/project/entity/MilestoneEntityValidationTest.java
+
+package com.example.project.entity;
+
+import org.junit.jupiter.api.*;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import jakarta.validation.*;
+import java.time.LocalDate;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Unit tests for MilestoneEntity validation constraints.
+ */
+class MilestoneEntityValidationTest {
+
+    private static ValidatorFactory validatorFactory;
+    private static Validator validator;
+
+    @BeforeAll
+    static void setUpValidator() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
+    }
+
+    @AfterAll
+    static void closeValidator() {
+        validatorFactory.close();
+    }
+
+    @Test
+    @DisplayName("Should fail validation when title is blank")
+    void testTitleNotBlank() {
+        MilestoneEntity entity = new MilestoneEntity(
+                null,
+                "   ", // blank title
+                "desc",
+                LocalDate.now(),
+                LocalDate.now().plusDays(1),
+                "active",
+                "projectId",
+                "groupId"
+        );
+        Set<ConstraintViolation<MilestoneEntity>> violations = validator.validate(entity);
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("title")));
+    }
+
+    @Test
+    @DisplayName("Should pass validation with valid title")
+    void testValidTitle() {
+        MilestoneEntity entity = new MilestoneEntity(
+                null,
+                "Valid Title",
+                "desc",
+                LocalDate.now(),
+                LocalDate.now().plusDays(1),
+                "active",
+                "projectId",
+                "groupId"
+        );
+        Set<ConstraintViolation<MilestoneEntity>> violations = validator.validate(entity);
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should allow null for optional fields")
+    void testOptionalFields() {
+        MilestoneEntity entity = new MilestoneEntity(
+                null,
+                "Title",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        Set<ConstraintViolation<MilestoneEntity>> violations = validator.validate(entity);
+        assertTrue(violations.isEmpty());
+    }
+}
+
+<!-- File: pom.xml (test dependencies section) -->
+<dependencies>
+    <!-- ... other dependencies ... -->
+
+    <!-- JUnit 5 -->
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>5.10.0</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Spring Boot Test -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+        <exclusions>
+            <exclusion>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+
+    <!-- MongoDB Embedded for @DataMongoTest -->
+    <dependency>
+        <groupId>de.flapdoodle.embed</groupId>
+        <artifactId>de.flapdoodle.embed.mongo</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Jakarta Validation API -->
+    <dependency>
+        <groupId>jakarta.validation</groupId>
+        <artifactId>jakarta.validation-api</artifactId>
+        <version>3.0.2</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>7.0.5.Final</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
