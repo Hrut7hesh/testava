@@ -1,0 +1,42 @@
+# Low-Level Design Document: GitLab Milestone Feature
+
+## 1. Objective
+
+The GitLab Milestone Feature aims to enhance project management capabilities by allowing project managers to create, manage, and close milestones, developers to associate releases with these milestones, and project leaders to view milestone analytics. This feature will enable better tracking of project progress, goal achievement, release management, and performance insights within the GitLab ecosystem. The system will support creating milestones with unique titles, associating them with projects or groups, linking releases to milestones, closing milestones, viewing milestone progress, searching and filtering milestones, and accessing milestone analytics for comprehensive project lifecycle management and performance evaluation.
+
+## 2. API Model
+
+### 2.1 Common Components/Services
+
+- MilestoneService
+- ReleaseService
+- ProjectService
+- GroupService
+- ValidationService
+- MilestoneProgressService
+- MilestoneSearchService
+- MilestoneAnalyticsService
+
+### 2.2 API Details
+
+| Operation | REST Method | Type | URL | Request JSON | Response JSON |
+|-----------|-------------|------|-----|--------------|---------------|
+| Create Milestone | POST | Success | /api/v4/projects/{projectId}/milestones | { "title": "string", "description": "string", "start_date": "date", "due_date": "date" } | { "id": "integer", "title": "string", "description": "string", "start_date": "date", "due_date": "date", "state": "string" } |
+| Create Milestone | POST | Success | /api/v4/groups/{groupId}/milestones | { "title": "string", "description": "string", "start_date": "date", "due_date": "date" } | { "id": "integer", "title": "string", "description": "string", "start_date": "date", "due_date": "date", "state": "string" } |
+| Associate Release with Milestone | PUT | Success | /api/v4/projects/{projectId}/releases/{tag} | { "milestone_id": "integer" } | { "tag_name": "string", "description": "string", "milestone": { "id": "integer", "title": "string" } } |
+| Close Milestone | PUT | Success | /api/v4/projects/{projectId}/milestones/{milestoneId} | { "state_event": "close" } | { "id": "integer", "title": "string", "state": "closed" } |
+| View Milestone Progress | GET | Success | /api/v4/projects/{projectId}/milestones/{milestoneId}/progress | {} | { "id": "integer", "title": "string", "progress": { "completed_issues": "integer", "total_issues": "integer", "completed_weight": "integer", "total_weight": "integer", "time_progress": "float" } } |
+| Search Milestones | GET | Success | /api/v4/milestones/search | { "query": "string", "state": "string", "start_date": "date", "end_date": "date", "scope": "string" } | [ { "id": "integer", "title": "string", "description": "string", "state": "string", "start_date": "date", "due_date": "date", "project_id": "integer", "group_id": "integer" } ] |
+| Get Milestone Analytics | GET | Success | /api/v4/projects/{projectId}/milestones/{milestoneId}/analytics | { "date_range": "string" } | { "id": "integer", "title": "string", "completion_rate": "float", "avg_time_to_completion": "float", "estimated_vs_actual": { "estimated": "float", "actual": "float" } } |
+
+### 2.3 Exceptions
+
+- MilestoneTitleNotUniqueException
+- InvalidDateRangeException
+- ReleaseTagNotUniqueException
+- MilestoneNotFoundException
+- ReleaseNotFoundException
+- InvalidMilestoneStateException
+- UnauthorizedAccessException
+- InvalidSearchQueryException
+- AnalyticsDataUnavailableException
