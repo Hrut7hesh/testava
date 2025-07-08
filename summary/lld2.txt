@@ -1,0 +1,91 @@
+# Milestone Management Backend – Project Summary
+
+## Introduction
+The Milestone Management Backend is an enterprise-grade, modular Spring Boot application designed to facilitate Milestone Progress Tracking and Milestone Search & Analytics for project management scenarios. It offers robust features for calculating and caching milestone progress, searching and analyzing milestones with advanced filters, and securing endpoints through role-based JWT authentication. The application is built with scalability, maintainability, and security in mind, following best practices in software architecture and design.
+
+## System Architecture
+The application follows a layered architecture, ensuring a clear separation of concerns and promoting maintainability:
+
+- **Controller Layer**: Handles HTTP requests and responses, exposing RESTful APIs for clients.
+- **Service Layer**: Encapsulates business logic, orchestrating operations between controllers, repositories, and external services.
+- **Repository Layer**: Manages data persistence, leveraging Spring Data JPA for relational databases and integrating with Elasticsearch for advanced search and analytics.
+- **Security Layer**: Implements JWT-based authentication and authorization, securing endpoints and managing user roles.
+- **Exception Handling**: Provides global exception handling for consistent and informative error responses.
+
+### Primary Use Cases
+- **Milestone Progress Tracking**: Calculate, cache, and retrieve progress statistics for project milestones.
+- **Milestone Search & Analytics**: Search, filter, and analyze milestones using KPIs and date range filters.
+- **Role-based Authentication**: Secure access to endpoints, ensuring only authorized users can perform sensitive operations.
+
+## Technology Stack
+- **Java 17+**: Modern language features and long-term support.
+- **Spring Boot 3.x**: Rapid development and robust ecosystem.
+- **Spring Data JPA**: ORM for database interactions.
+- **Spring Security (JWT)**: Stateless, token-based authentication and authorization.
+- **Elasticsearch**: High-performance search and analytics capabilities.
+- **H2/PostgreSQL**: Configurable relational database support for development and production.
+- **Swagger/OpenAPI**: Interactive API documentation and testing.
+- **SLF4J**: Unified logging across all modules.
+
+## Key Design Decisions
+- **Layered Architecture**: Promotes separation of concerns, testability, and scalability.
+- **DTO Usage**: Data Transfer Objects (DTOs) are used to decouple API contracts from internal entities, ensuring clean data flow between layers.
+- **Service Abstraction**: Business logic is encapsulated in service interfaces and implementations, allowing for easy extension and testing.
+- **Caching**: Progress statistics are cached to optimize performance and reduce redundant computations.
+- **Elasticsearch Integration**: Enables advanced search and analytics on milestone data, supporting complex queries and KPI calculations.
+- **Global Exception Handling**: Ensures consistent error responses and improved client experience.
+- **Comprehensive Logging**: SLF4J-based logging is implemented across all modules for traceability and monitoring.
+
+## Security and Best Practices
+- **JWT-based Authentication**: All endpoints are secured using stateless JWT tokens, ensuring robust authentication and authorization.
+- **Role-based Access Control**: User roles are enforced at the endpoint level, restricting access to sensitive operations.
+- **Input Validation**: DTOs and controller methods include validation annotations to prevent invalid or malicious data from entering the system.
+- **Global Exception Handling**: A centralized exception handler provides meaningful error messages and HTTP status codes.
+- **DTO Separation**: DTOs are used to prevent overexposing internal entities and to maintain a clear contract with API consumers.
+- **Service-layer Abstraction**: Business logic is encapsulated in services, decoupling it from controllers and repositories.
+- **Database Handling**: Uses JPA for ORM, with support for both H2 (development) and PostgreSQL (production). Configuration is managed via `application.yml`.
+- **API Documentation**: Swagger/OpenAPI is integrated for interactive API exploration and testing.
+- **Logging**: SLF4J ensures consistent and configurable logging across the application.
+
+## Folder/Package Structure
+The project is organized into clearly defined packages, each with a specific responsibility:
+
+```
+src/
+  main/
+    java/
+      com/example/milestonemanager/
+        config/           # Application and Swagger configuration
+        controller/       # REST controllers for handling HTTP requests
+        dto/              # Data Transfer Objects for API communication
+        entity/           # JPA entities representing database tables
+        exception/        # Custom exceptions and global exception handler
+        repository/       # Spring Data JPA repositories for data access
+        security/         # JWT security configuration and authentication logic
+        service/          # Business logic interfaces and implementations
+        util/             # Utility classes (date handling, KPI calculations)
+        MilestoneManagerApplication.java  # Main Spring Boot application entry point
+    resources/
+      application.yml     # Main application configuration
+      logback-spring.xml  # Logging configuration
+  test/
+    java/
+      com/example/milestonemanager/
+        controller/       # Controller layer tests
+        service/          # Service layer tests
+        repository/       # Repository/data access tests
+```
+
+### Package Responsibilities
+- **config**: Contains configuration classes for Swagger, caching, and other application-wide settings.
+- **controller**: Exposes RESTful endpoints for milestone progress, analytics, and search operations.
+- **dto**: Defines the data structures used for API requests and responses, as well as error responses.
+- **entity**: Houses the JPA entity classes mapping to database tables (e.g., Milestone, Project).
+- **exception**: Custom exception classes and a global exception handler for unified error management.
+- **repository**: Interfaces for data access, leveraging Spring Data JPA for RDBMS and integrating with Elasticsearch.
+- **security**: Implements JWT authentication, token management, and user details services.
+- **service**: Contains interfaces and implementations for business logic, including milestone progress, search, analytics, and Elasticsearch integration.
+- **util**: Utility classes for date manipulation and KPI calculations.
+
+## Conclusion
+This backend application is engineered for enterprise environments, emphasizing modularity, security, and extensibility. Its robust architecture, modern technology stack, and adherence to best practices make it suitable for scalable project management solutions. For further details, refer to the included Swagger documentation and the project's README.md.
