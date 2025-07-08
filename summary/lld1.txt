@@ -1,0 +1,71 @@
+# Project Summary: Spring Boot Milestone & Release Management Backend
+
+## Introduction
+This Spring Boot application provides robust milestone and release management capabilities for projects and groups, following enterprise-grade standards for scalability, maintainability, and security. The system enables users to create, update, and close milestones, as well as associate releases with milestones, ensuring data integrity and secure access throughout the lifecycle.
+
+## System Architecture
+The application follows a layered architecture with clear separation of concerns, including Controller, Service, Repository, Entity, DTO, Config, Security, Exception, and Utility layers. The primary use cases addressed are:
+- Creating, updating, and closing project/group milestones with validation.
+- Associating GitLab releases with milestones, ensuring unique release tags and milestone state management.
+
+### Key Design Decisions
+- **Layered Structure:** Controllers handle HTTP requests, Services encapsulate business logic, and Repositories manage persistence.
+- **DTO Usage:** Data Transfer Objects are used to decouple internal models from API contracts.
+- **Validation:** Centralized validation services ensure business rules (e.g., unique milestone titles, valid date ranges).
+- **Exception Handling:** Custom exceptions and global handlers provide consistent error responses.
+
+## Technology Stack
+- **Spring Boot**: Core framework for building the application.
+- **Spring Data JPA (Hibernate)**: ORM for database operations.
+- **Spring Security (JWT-based)**: Secure authentication and authorization.
+- **Swagger/OpenAPI**: API documentation and exploration.
+- **H2 Database**: In-memory database for development/testing.
+- **Lombok**: Reduces boilerplate code in models and DTOs.
+- **JUnit/Mockito**: Testing frameworks.
+
+## Security and Best Practices
+- **JWT Authentication**: Ensures secure, stateless access to endpoints.
+- **Input Validation**: All incoming data is validated to prevent invalid or malicious input.
+- **Role-Based Access Control**: Only authorized users can perform sensitive operations (e.g., milestone creation/closure).
+- **Global Exception Handling**: Provides uniform error responses and logs incidents for auditability.
+- **DTO Separation**: Prevents overexposure of internal models and enforces contract-based API design.
+- **Service-Layer Abstraction**: Business logic is isolated from controllers for maintainability and testability.
+- **Database Migrations**: (Recommended) Use of Flyway or Liquibase for schema evolution.
+
+## Folder/Package Structure
+- **controller**: REST controllers for handling HTTP requests and responses for milestones and releases.
+- **service**: Business logic for milestone and release management, including validation and state transitions.
+- **repository**: Spring Data JPA repositories for CRUD operations on entities.
+- **entity**: JPA entities representing Milestone, Release, and their relationships.
+- **dto**: Data Transfer Objects for API requests and responses.
+- **config**: Application configuration, including Swagger, security, and database settings.
+- **security**: JWT authentication filters, user details services, and security configuration.
+- **exception**: Custom exception classes and global exception handlers.
+- **util**: Utility classes for common reusable logic.
+
+### Example Structure
+```
+com.example.milestonemanager
+├── config
+├── controller
+├── dto
+├── entity
+├── exception
+├── repository
+├── security
+├── service
+├── util
+```
+
+- **controller**: Handles endpoints such as `/projects/{projectId}/milestones`, `/groups/{groupId}/milestones`, and `/projects/{projectId}/releases/{tag}`.
+- **service**: Contains `MilestoneService`, `ReleaseService`, and `ValidationService` for core business logic.
+- **repository**: Interfaces for `MilestoneRepository` and `ReleaseRepository`.
+- **entity**: Defines `Milestone` and `Release` entities, including relationships.
+- **dto**: Request and response models for API payloads.
+- **config**: Swagger, security, and application configuration.
+- **security**: JWT filter, security config, and user details service.
+- **exception**: Handles exceptions like `MilestoneTitleNotUniqueException`, `InvalidDateRangeException`, `UnauthorizedAccessException`, `ReleaseTagNotUniqueException`, `MilestoneNotFoundException`, `ReleaseNotFoundException`.
+- **util**: Common helper classes.
+
+## Conclusion
+This backend application is designed for extensibility and enterprise readiness, supporting milestone and release management with strong validation, security, and documentation. The structure and best practices followed ensure maintainability and scalability for future enhancements.
