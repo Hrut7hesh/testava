@@ -1,0 +1,110 @@
+# Milestone Management Backend - Project Summary
+
+## Introduction
+This Spring Boot application is designed to provide enterprise-level backend services for milestone progress tracking and analytics. The system supports calculation and caching of milestone progress, advanced search and analytics with KPIs and filters, and robust security features. The application is modular, scalable, and follows industry best practices for maintainability and extensibility.
+
+## System Architecture
+The application follows a layered, modular architecture with clear separation of concerns:
+- **Controller Layer**: Handles HTTP requests and API endpoints for milestone progress, search, and analytics.
+- **Service Layer**: Implements business logic, including progress calculation, analytics, and integration with Elasticsearch.
+- **Repository Layer**: Manages data persistence using JPA repositories.
+- **Security Layer**: Provides JWT-based authentication and role-based access control.
+- **Exception Handling**: Centralized global exception handling for consistent error responses.
+
+**Primary Use Cases:**
+- Calculate and retrieve milestone progress for projects
+- Search and filter milestones with analytics and KPIs
+- Secure access to endpoints based on user roles
+
+## Technology Stack
+- **Spring Boot** (core framework)
+- **Spring Security** (JWT-based authentication)
+- **Spring Data JPA** (data persistence)
+- **Elasticsearch** (search and analytics)
+- **Swagger/OpenAPI** (API documentation)
+- **Maven** (build tool)
+- **Java 17+**
+- **Docker** (for Elasticsearch, optional)
+
+## Key Design Decisions
+- **Service-Layer Abstraction**: Business logic is encapsulated in services, decoupling it from controllers.
+- **DTO Usage**: Data Transfer Objects (DTOs) are used for communication between layers, enhancing security and maintainability.
+- **Caching**: Progress statistics are cached for performance optimization.
+- **Exception Handling**: Global exception handler ensures uniform error responses.
+- **Modularity**: Each feature is encapsulated in its own controller, service, and model classes.
+
+## Security and Best Practices
+- **JWT-Based Authentication**: All endpoints are secured using JWT tokens, ensuring stateless and scalable authentication.
+- **Role-Based Access Control**: Access to sensitive endpoints is restricted based on user roles.
+- **Input Validation**: DTOs and request bodies are validated to prevent invalid or malicious data.
+- **Global Exception Handling**: Custom exceptions and a global handler provide consistent and informative error responses.
+- **API Documentation**: Swagger/OpenAPI is integrated for comprehensive API documentation.
+- **Clean Code Principles**: Follows SOLID, DRY, and separation of concerns throughout the codebase.
+
+## Folder/Package Structure
+
+```
+src/main/java/com/example/milestone/
+├── config/
+│   ├── CacheConfig.java
+│   ├── SwaggerConfig.java
+│   └── SecurityConfig.java
+├── controller/
+│   ├── MilestoneProgressController.java
+│   ├── MilestoneSearchController.java
+│   └── MilestoneAnalyticsController.java
+├── dto/
+│   ├── MilestoneProgressResponseDTO.java
+│   ├── MilestoneAnalyticsResponseDTO.java
+│   ├── MilestoneSearchRequestDTO.java
+│   ├── MilestoneSearchResponseDTO.java
+│   └── ErrorResponseDTO.java
+├── entity/
+│   ├── Milestone.java
+│   ├── MilestoneProgress.java
+│   └── User.java
+├── exception/
+│   ├── MilestoneNotFoundException.java
+│   ├── UnauthorizedAccessException.java
+│   ├── AnalyticsDataUnavailableException.java
+│   ├── InvalidSearchQueryException.java
+│   └── GlobalExceptionHandler.java
+├── repository/
+│   ├── MilestoneRepository.java
+│   ├── MilestoneProgressRepository.java
+│   └── UserRepository.java
+├── security/
+│   ├── JwtAuthenticationEntryPoint.java
+│   ├── JwtRequestFilter.java
+│   ├── JwtTokenProvider.java
+│   └── CustomUserDetailsService.java
+├── service/
+│   ├── MilestoneProgressService.java
+│   ├── MilestoneProgressServiceImpl.java
+│   ├── MilestoneSearchService.java
+│   ├── MilestoneSearchServiceImpl.java
+│   ├── MilestoneAnalyticsService.java
+│   ├── MilestoneAnalyticsServiceImpl.java
+│   └── ElasticsearchService.java
+├── util/
+│   └── LoggingUtil.java
+└── MilestoneApplication.java
+
+src/main/resources/
+├── application.yml
+└── logback-spring.xml
+```
+
+**Package Responsibilities:**
+- **config/**: Application, cache, Swagger, and security configurations.
+- **controller/**: REST controllers for handling API requests and responses.
+- **dto/**: Data Transfer Objects for request/response payloads.
+- **entity/**: JPA entities representing database tables.
+- **exception/**: Custom exceptions and global exception handler.
+- **repository/**: JPA repositories for data access.
+- **security/**: JWT authentication, filters, and user details service.
+- **service/**: Business logic and integration with external systems (e.g., Elasticsearch).
+- **util/**: Utility classes (e.g., logging).
+
+## Conclusion
+This backend system is engineered for scalability, security, and maintainability. It leverages modern Spring Boot practices, robust security, and modular design to deliver reliable milestone management and analytics for enterprise needs.
