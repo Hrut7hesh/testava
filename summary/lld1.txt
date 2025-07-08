@@ -1,0 +1,96 @@
+# Project Summary: Milestone and Release Management Spring Boot Application
+
+## Introduction
+This Spring Boot application provides a robust backend solution for managing project and group milestones, as well as associating releases with milestones. Designed with enterprise standards in mind, it ensures scalability, maintainability, and security for organizations managing complex project lifecycles. The application supports milestone creation, updating, closing, and release association, with comprehensive validation and security mechanisms.
+
+## System Architecture
+The application follows a layered architecture, separating concerns across controllers, services, repositories, and data models. It exposes RESTful endpoints for:
+- Creating, updating, and closing milestones at both project and group levels
+- Associating GitLab releases with milestones
+
+**Primary Use Cases:**
+- Project and group milestone lifecycle management
+- Release association and milestone state updates
+- Validation of unique titles, date ranges, and permissions
+
+**Key Design Principles:**
+- Modular codebase for easy extensibility
+- Service-layer abstraction for business logic
+- DTO-based communication between layers
+- Global exception handling for consistent error responses
+
+## Technology Stack
+- **Spring Boot**: Application framework
+- **Spring Security**: Role-based authentication with JWT
+- **Spring Data JPA (Hibernate)**: ORM and database access
+- **Swagger/OpenAPI**: API documentation
+- **H2 Database**: In-memory DB for development/testing
+- **SLF4J & Logback**: Logging
+- **Maven/Gradle**: Build automation
+
+## Key Design Decisions
+- **Service Abstraction**: All business logic is encapsulated in service classes, promoting testability and separation from controllers.
+- **DTO Usage**: Data Transfer Objects are used for all API requests and responses, ensuring decoupling between internal models and external contracts.
+- **Validation Layer**: Custom validation logic (e.g., unique milestone titles, valid date ranges) is centralized in dedicated services.
+- **Exception Handling**: Custom exceptions and a global handler provide meaningful error messages and HTTP status codes.
+- **Security**: JWT-based authentication and role-based authorization protect endpoints and resources.
+- **Documentation**: Swagger/OpenAPI integration for interactive API exploration and testing.
+
+## Security and Best Practices
+- **JWT Authentication**: All endpoints are secured using JWT tokens, with role-based access control to restrict sensitive operations.
+- **Input Validation**: Both annotation-based and programmatic validation ensure data integrity and prevent invalid or malicious input.
+- **Global Exception Handling**: A centralized exception handler ensures consistent error responses and logs all exceptions.
+- **DTO Separation**: DTOs are used to prevent direct exposure of entity models and to control the data flow between client and server.
+- **Database Handling**: JPA repositories abstract database operations, and entities are mapped with clear relationships.
+- **Logging**: SLF4J with Logback provides structured and configurable logging for audit and debugging.
+- **API Documentation**: SwaggerConfig enables auto-generated, interactive API documentation.
+
+## Folder/Package Structure
+- **controller**: REST controllers handling HTTP requests and responses for milestones, releases, and authentication.
+- **service**: Business logic and validation. Includes interfaces and their implementations (e.g., MilestoneService, ReleaseService, ValidationService).
+- **repository**: JPA repositories for data access (MilestoneRepository, ReleaseRepository, etc.).
+- **entity**: JPA entities representing database tables (Milestone, Release, Project, Group, User).
+- **dto**: Data Transfer Objects for request and response payloads, ensuring decoupled API contracts.
+- **config**: Application and security configuration classes (e.g., SwaggerConfig, SecurityConfig).
+- **security**: JWT utilities, filters, authentication/authorization logic, and role management.
+- **exception**: Custom exception classes and a global exception handler for consistent error management.
+- **util**: Utility classes for common helper functions.
+- **resources**:
+  - **application.yml**: Main application configuration
+  - **logback-spring.xml**: Logging configuration
+- **README.md**: Setup instructions and project overview
+- **project-structure.md**: Detailed file/package structure
+
+### Example Structure
+```
+src/main/java/com/example/milestoneapp/
+├── config/
+├── controller/
+├── dto/
+├── entity/
+├── exception/
+├── repository/
+├── security/
+├── service/
+├── util/
+src/main/resources/
+├── application.yml
+├── logback-spring.xml
+README.md
+project-structure.md
+```
+
+**Responsibilities:**
+- **controller**: Defines REST endpoints and delegates processing to services.
+- **service**: Implements business logic, validation, and coordination between repositories and controllers.
+- **repository**: Manages database CRUD operations.
+- **entity**: Models domain data and relationships.
+- **dto**: Structures data for API communication.
+- **config**: Centralizes configuration for security, Swagger, etc.
+- **security**: Handles authentication, authorization, and token management.
+- **exception**: Defines and manages application-specific errors.
+- **util**: Provides reusable helper functions.
+
+---
+
+This application is ready for deployment and further extension. For detailed setup and usage instructions, refer to the README.md and project-structure.md files included in the repository.
